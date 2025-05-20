@@ -94,12 +94,14 @@ async function fetchUserDetails() {
 function displayBottles(bottles) {
     const bottlesList = document.getElementById('bottles-list');
     bottlesList.innerHTML = bottles.map((bottle, index) => `
-        <div class="bottle-card">
-            <h3>${bottle.name}</h3>
-            <p>Region: ${bottle.region}</p>
-            <p>Cepage: ${bottle.cepage}</p>
-            <p>Year: ${bottle.year}</p>
-            <button class="button" onclick="deleteBottle(${index})">Remove</button>
+        <div class="bottle-card" style="background-color: var(--light-red); padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p><strong>${bottle.name}</strong></p>
+                    <p>Region: ${bottle.region} | Cepage: ${bottle.cepage} | Year: ${bottle.year}</p>
+                </div>
+                <button class="button" onclick="deleteBottle(${index})">I drank it!</button>
+            </div>
         </div>
     `).join('');
 }

@@ -17,7 +17,7 @@
             <h1 id="user-name">Loading...</h1>
             <button id="add-bottle-btn" class="button">Add Bottle</button>
             <h2>Bottles Collection</h2>
-            <div id="bottles-list"></div>
+            <div id="bottles-list" style="display: flex; flex-direction: column; gap: 1rem;"></div>
         </div>
     </main>
 
@@ -25,13 +25,13 @@
     <div id="add-bottle-popup" class="popup">
         <div class="popup-content">
             <span class="close">&times;</span>
-            <h2>Add New Bottle</h2>
+            <h2>Add a new bottle</h2>
             <form id="add-bottle-form">
                 <input type="text" name="name" placeholder="Wine Name" required>
                 <input type="text" name="region" placeholder="Region" required>
                 <input type="text" name="cepage" placeholder="Cepage" required>
                 <input type="number" name="year" placeholder="Year" required min="1900" max="2024">
-                <button type="submit" class="button">Add Bottle</button>
+                <button type="submit" class="button">Add bottle</button>
             </form>
         </div>
     </div>
