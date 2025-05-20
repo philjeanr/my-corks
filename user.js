@@ -77,7 +77,7 @@ async function fetchUserDetails() {
         }
 
         const userData = userDoc.data();
-        document.getElementById('user-name').textContent = userData.name;
+        document.getElementById('user-name').textContent = `${userData.name}, these are your corks!`;
         
         if (userData.bottles && userData.bottles.length > 0) {
             displayBottles(userData.bottles);
