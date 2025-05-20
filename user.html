@@ -5,26 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Details - My Corks</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">My Corks</a>
-        </nav>
-    </header>
+    <div id="header-container"></div>
     <main>
-        <section class="user-details">
+        <div class="user-details">
             <h1 id="user-name">Loading...</h1>
-            <button id="add-bottle-btn" class="cta-button">Add Bottle</button>
-            <div class="bottles-container">
-                <h2>Bottles Collection</h2>
-                <div id="bottles-list"></div>
-            </div>
-        </section>
+            <button id="add-bottle-btn" class="button">Add Bottle</button>
+            <h2>Bottles Collection</h2>
+            <div id="bottles-list"></div>
+        </div>
     </main>
-    <!-- Add Bottle Modal -->
-    <div id="add-bottle-modal" class="modal">
-        <div class="modal-content">
+
+    <!-- Add Bottle Popup -->
+    <div id="add-bottle-popup" class="popup">
+        <div class="popup-content">
             <span class="close">&times;</span>
             <h2>Add New Bottle</h2>
             <form id="add-bottle-form">
@@ -32,20 +31,14 @@
                 <input type="text" name="region" placeholder="Region" required>
                 <input type="text" name="cepage" placeholder="Cepage" required>
                 <input type="number" name="year" placeholder="Year" required min="1900" max="2024">
-                <button type="submit" class="cta-button">Add Bottle</button>
+                <button type="submit" class="button">Add Bottle</button>
             </form>
         </div>
     </div>
 
-    <footer>
-        <p>&copy; 2024 My Corks. All rights reserved.</p>
-    </footer>
+    <div id="footer-container"></div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
-    <script src="firebase-config.js"></script>
+    <script src="components/loadComponents.js"></script>
     <script src="user.js"></script>
 </body>
 </html> 

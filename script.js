@@ -6,14 +6,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add click handler to the CTA button
-const ctaButton = document.querySelector('.cta-button');
-if (ctaButton) {
-    ctaButton.addEventListener('click', function() {
-        document.querySelector('#home').scrollIntoView();
-    });
-}
-
 // Fetch and display users
 async function displayUsers() {
     const usersList = document.getElementById('users-list');
@@ -27,7 +19,7 @@ async function displayUsers() {
         
         // Check if there are any users
         if (querySnapshot.empty) {
-            usersList.innerHTML = '<p class="no-users">No users found</p>';
+            usersList.innerHTML = '<p>No users found</p>';
             return;
         }
         
@@ -35,9 +27,9 @@ async function displayUsers() {
         querySnapshot.forEach(doc => {
             const userData = doc.data();
             const userCard = document.createElement('div');
-            userCard.className = 'user-card';
+            userCard.className = 'button';
             userCard.innerHTML = `
-                <a href="user.html?id=${doc.id}">
+                <a href="user.html?id=${doc.id}" style="color: white; text-decoration: none;">
                     <h3>${userData.name || 'Anonymous'}</h3>
                 </a>
             `;
@@ -45,7 +37,7 @@ async function displayUsers() {
         });
     } catch (error) {
         console.error('Error fetching users:', error);
-        usersList.innerHTML = '<p class="error">Error loading users</p>';
+        usersList.innerHTML = '<p>Error loading users</p>';
     }
 }
 
