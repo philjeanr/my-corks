@@ -43,43 +43,18 @@ let stream = null;
 
 // Open popup
 addBottleBtn.onclick = function() {
-popup.style.display = "block";
-    addBottleForm.style.display = "none";
-    scanBottleForm.style.display = "none";
-}
-
-// Close modal and cleanup
-function closePopup() {
-    popup.style.display = "none";
-    addBottleForm.style.display = "none";
-    scanBottleForm.style.display = "none";
-    resetScanForm();
-    stopCamera();
-}
-
-// Reset scan form
-function resetScanForm() {
-    cameraContainer.style.display = "none";
-    previewContainer.style.display = "none";
-    captureBtn.style.display = "none";
-    analyzeUploadBtn.style.display = "none";
-    retryBtn.style.display = "none";
-    scanningStatus.style.display = "none";
-    captureCanvas.style.display = "none";
-    confirmationDialog.style.display = "none";
-    uploadPreview.src = "";
-    if (photoUpload) {
-        photoUpload.value = "";
-    }
+    popup.style.display = "block";
 }
 
 // Close popup
-closeBtn.onclick = closePopup;
+closeBtn.onclick = function() {
+    popup.style.display = "none";
+}
 
 // Close popup when clicking outside
 window.onclick = function(event) {
     if (event.target == popup) {
-        closePopup();
+        popup.style.display = "none";
     }
 }
 
@@ -408,11 +383,11 @@ addBottleForm.onsubmit = async function(e) {
     };
 
     try {
-        await addBottleToCollection(newBottle);
+        await addBottleToCollection(bottleData);
         
         // Close modal and reset form
         this.reset();
-        closePopup();
+        popup.style.display = "none";
         
         // Refresh the bottles list
         fetchUserDetails();
@@ -498,7 +473,7 @@ async function processImageWithConfirmation(imageData, isCamera = false) {
                 try {
                     const confirmedData = getConfirmedData();
                     await addBottleToCollection(confirmedData);
-                    closePopup();
+                    popup.style.display = "none";
                     fetchUserDetails();
                     resolve();
                 } catch (error) {
@@ -525,45 +500,32 @@ async function processImageWithConfirmation(imageData, isCamera = false) {
     }
 }
 
-// Update capture button handler
-captureBtn.onclick = async function() {
-    if (!stream) return;
-
-    // ... existing capture code ...
-
-    try {
-        await processImageWithConfirmation(imageData, true);
-    } catch (error) {
-        if (error.message !== 'User cancelled') {
-            console.error('Error processing image:', error);
-            alert('Error processing image. Please try again.');
-            retryCapture();
-        }
+// Reset scan form
+function resetScanForm() {
+    cameraContainer.style.display = "none";
+    previewContainer.style.display = "none";
+    captureBtn.style.display = "none";
+    analyzeUploadBtn.style.display = "none";
+    retryBtn.style.display = "none";
+    scanningStatus.style.display = "none";
+    captureCanvas.style.display = "none";
+    confirmationDialog.style.display = "none";
+    uploadPreview.src = "";
+    if (photoUpload) {
+        photoUpload.value = "";
     }
 }
-
-// Update analyze upload button handler
-analyzeUploadBtn.onclick = async function() {
-    if (!uploadPreview || !uploadPreview.src) return;
-    
-    analyzeUploadBtn.style.display = "none";
-    retryBtn.style.display = "block";
-    scanningStatus.style.display = "block";
-
-    try {
-        await processImageWithConfirmation(uploadPreview.src, false);
-    } catch (error) {
-        if (error.message !== 'User cancelled') {
-            console.error('Error processing image:', error);
-            alert('Error processing image. Please try again.');
-            retryBtn.style.display = "block";
-        }
-    }
-} 
 
 // Display bottles
 function displayBottles(bottles) {
     const bottlesList = document.getElementById('bottles-list');
+    if (!bottlesList) return;
+
+    if (!bottles || bottles.length === 0) {
+        bottlesList.innerHTML = '<p>No bottles in collection yet.</p>';
+        return;
+    }
+
     bottlesList.innerHTML = bottles.map((bottle, index) => `
         <div class="bottle-card" style="background-color: var(--light-red); padding: 1rem;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -571,14 +533,14 @@ function displayBottles(bottles) {
                     <p><strong>${bottle.name}</strong></p>
                     <p>Region: ${bottle.region} | Cepage: ${bottle.cepage} | Year: ${bottle.year}</p>
                 </div>
-                <button class="button" onclick="deleteBottle(${index})">I drank it!</button>
+                <button class="button" onclick="window.deleteBottle(${index})">I drank it!</button>
             </div>
         </div>
     `).join('');
 }
 
-// Delete bottle
-async function deleteBottle(index) {
+// Make deleteBottle function globally accessible
+window.deleteBottle = async function(index) {
     if (!confirm('Are you sure you want to remove this bottle?')) {
         return;
     }
@@ -601,4 +563,4 @@ async function deleteBottle(index) {
         console.error("Error deleting bottle:", error);
         alert("Failed to delete bottle. Please try again.");
     }
-}
+};
