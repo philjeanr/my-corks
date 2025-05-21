@@ -27,13 +27,69 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Add New Bottle</h2>
-            <form id="add-bottle-form">
+            <div class="add-options">
+                <button id="manual-entry-btn" class="option-button">Manual Entry</button>
+                <button id="scan-bottle-btn" class="option-button">Scan Bottle</button>
+            </div>
+            
+            <!-- Manual Entry Form -->
+            <form id="add-bottle-form" style="display: none;">
                 <input type="text" name="name" placeholder="Wine Name" required>
                 <input type="text" name="region" placeholder="Region" required>
                 <input type="text" name="cepage" placeholder="Cepage" required>
                 <input type="number" name="year" placeholder="Year" required min="1900" max="2024">
                 <button type="submit" class="cta-button">Add Bottle</button>
             </form>
+
+            <!-- Scan Bottle Form -->
+            <div id="scan-bottle-form" style="display: none;">
+                <div class="scan-options">
+                    <button id="use-camera-btn" class="option-button">Use Camera</button>
+                    <button id="upload-photo-btn" class="option-button">Upload Photo</button>
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                </div>
+                <div class="camera-container" style="display: none;">
+                    <video id="camera-preview" autoplay playsinline></video>
+                    <canvas id="capture-canvas" style="display: none;"></canvas>
+                </div>
+                <div class="preview-container" style="display: none;">
+                    <img id="upload-preview" style="max-width: 100%; border-radius: 8px;">
+                </div>
+                <div class="scan-controls">
+                    <button id="capture-btn" class="cta-button" style="display: none;">Capture Image</button>
+                    <button id="analyze-upload-btn" class="cta-button" style="display: none;">Analyze Image</button>
+                    <button id="retry-btn" class="cta-button" style="display: none;">Retry</button>
+                </div>
+                <div id="scanning-status" style="display: none;">
+                    <p>Processing image...</p>
+                </div>
+                <!-- Confirmation Dialog -->
+                <div id="confirmation-dialog" class="confirmation-dialog" style="display: none;">
+                    <h3>Confirm Extracted Information</h3>
+                    <div class="extracted-info">
+                        <div class="info-field">
+                            <label>Wine Name:</label>
+                            <input type="text" id="confirm-name">
+                        </div>
+                        <div class="info-field">
+                            <label>Region:</label>
+                            <input type="text" id="confirm-region">
+                        </div>
+                        <div class="info-field">
+                            <label>Grape Variety (Cépage):</label>
+                            <input type="text" id="confirm-cepage">
+                        </div>
+                        <div class="info-field">
+                            <label>Year:</label>
+                            <input type="number" id="confirm-year">
+                        </div>
+                    </div>
+                    <div class="confirmation-buttons">
+                        <button id="confirm-info" class="cta-button">Confirm</button>
+                        <button id="cancel-info" class="option-button">Cancel</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -46,6 +102,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <script src="firebase-config.js"></script>
-    <script src="user.js"></script>
+    <script src="openai-config.js" type="module"></script>
+    <script src="user.js" type="module"></script>
 </body>
 </html> 
