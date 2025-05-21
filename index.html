@@ -5,34 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Corks</title>
     <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">My Corks</a>
-        </nav>
-    </header>
-
-    <main>
-        <section id="home" class="hero">
-            <h1>Welcome to My Corks</h1>
-            <p>A modern, responsive website built with HTML, CSS, and JavaScript.</p>            
-            <div class="users-container">
-                <h2>Our Users</h2>
-                <div id="users-list"></div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024 My Corks. All rights reserved.</p>
-    </footer>
-
-    <!-- Firebase SDK -->
+    <script src="components/loadComponents.js"></script>
+    <script src="script.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
     <script src="firebase-config.js"></script>
-    <script src="script.js"></script>
+</head>
+<body>
+    <div id="header-container"></div>
+    <main>
+        <div id="home">
+            <h1>Welcome to My Corks</h1>
+            <p>Placeholder ...</p>
+            <h2>Our Users</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;" id="users-list"></div>
+        </div>
+    </main>
+    <div id="footer-container"></div>
 </body>
 </html> 

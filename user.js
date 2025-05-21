@@ -9,8 +9,8 @@ if (!userId) {
     window.location.href = 'index.html';
 }
 
-// Modal elements
-const modal = document.getElementById('add-bottle-modal');
+// Popup elements
+const popup = document.getElementById('add-bottle-popup');
 const addBottleBtn = document.getElementById('add-bottle-btn');
 const closeBtn = document.querySelector('.close');
 const addBottleForm = document.getElementById('add-bottle-form');
@@ -41,16 +41,16 @@ const cancelInfoBtn = document.getElementById('cancel-info');
 
 let stream = null;
 
-// Open modal
+// Open popup
 addBottleBtn.onclick = function() {
-    modal.style.display = "block";
+popup.style.display = "block";
     addBottleForm.style.display = "none";
     scanBottleForm.style.display = "none";
 }
 
 // Close modal and cleanup
-function closeModal() {
-    modal.style.display = "none";
+function closePopup() {
+    popup.style.display = "none";
     addBottleForm.style.display = "none";
     scanBottleForm.style.display = "none";
     resetScanForm();
@@ -73,13 +73,13 @@ function resetScanForm() {
     }
 }
 
-// Close modal
-closeBtn.onclick = closeModal;
+// Close popup
+closeBtn.onclick = closePopup;
 
-// Close modal when clicking outside
+// Close popup when clicking outside
 window.onclick = function(event) {
-    if (event.target == modal) {
-        closeModal();
+    if (event.target == popup) {
+        closePopup();
     }
 }
 
@@ -399,8 +399,8 @@ async function addBottleToCollection(bottleData) {
 addBottleForm.onsubmit = async function(e) {
     e.preventDefault();
     
-    const formData = new FormData(this);
-    const newBottle = {
+    const formData = new FormData(addBottleForm);
+    const bottleData = {
         name: formData.get('name'),
         region: formData.get('region'),
         cepage: formData.get('cepage'),
@@ -412,84 +412,41 @@ addBottleForm.onsubmit = async function(e) {
         
         // Close modal and reset form
         this.reset();
-        closeModal();
+        closePopup();
         
         // Refresh the bottles list
-        displayUserDetails();
+        fetchUserDetails();
     } catch (error) {
         console.error('Error adding bottle:', error);
         alert('Error adding bottle. Please try again.');
     }
-}
+};
 
-// Fetch and display user details and bottles
-async function displayUserDetails() {
-    const userNameElement = document.getElementById('user-name');
-    const bottlesList = document.getElementById('bottles-list');
-    
+// Fetch and display user details
+async function fetchUserDetails() {
     try {
-        // Get user document
         const userDoc = await db.collection('users').doc(userId).get();
         
         if (!userDoc.exists) {
-            window.location.href = 'index.html';
-            return;
+            throw new Error('User not found');
         }
-        
-        const userData = userDoc.data();
-        
-        // Display user name
-        userNameElement.textContent = userData.name || 'Anonymous';
-        
-        // Display bottles
-        if (!userData.bottles || userData.bottles.length === 0) {
-            bottlesList.innerHTML = '<p class="no-bottles">No corks in cellar</p>';
-            return;
-        }
-        
-        bottlesList.innerHTML = userData.bottles.map((bottle, index) => `
-            <div class="bottle-card">
-                <h3>${bottle.name} - ${bottle.region} - ${bottle.cepage}  (${bottle.year})</h3>
-                <button class="delete-btn" data-index="${index}">Remove</button>
-            </div>
-        `).join('');
 
-        // Add click handlers for delete buttons
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.onclick = async function() {
-                if (confirm('Are you sure you want to remove this bottle?')) {
-                    const index = parseInt(this.getAttribute('data-index'));
-                    try {
-                        // Get current bottles array
-                        const userDoc = await db.collection('users').doc(userId).get();
-                        const userData = userDoc.data();
-                        const bottles = userData.bottles;
-                        
-                        // Remove the bottle at the specified index
-                        bottles.splice(index, 1);
-                        
-                        // Update the document with the new bottles array
-                        await db.collection('users').doc(userId).update({
-                            bottles: bottles
-                        });
-                        
-                        // Refresh the display
-                        displayUserDetails();
-                    } catch (error) {
-                        console.error('Error removing bottle:', error);
-                        alert('Error removing bottle. Please try again.');
-                    }
-                }
-            };
-        });
+        const userData = userDoc.data();
+        document.getElementById('user-name').textContent = `${userData.name}, these are your corks!`;
+        
+        if (userData.bottles && userData.bottles.length > 0) {
+            displayBottles(userData.bottles);
+        } else {
+            document.getElementById('bottles-list').innerHTML = '<p>No bottles in collection yet.</p>';
+        }
     } catch (error) {
-        console.error('Error fetching user details:', error);
-        bottlesList.innerHTML = '<p class="error">Error loading bottles</p>';
+        console.error("Error fetching user details:", error);
+        document.getElementById('user-name').textContent = 'Error loading user';
     }
 }
 
 // Initialize when the page loads
-document.addEventListener('DOMContentLoaded', displayUserDetails);
+document.addEventListener('DOMContentLoaded', fetchUserDetails);
 
 // Cleanup when page is unloaded
 window.addEventListener('beforeunload', () => {
@@ -541,8 +498,8 @@ async function processImageWithConfirmation(imageData, isCamera = false) {
                 try {
                     const confirmedData = getConfirmedData();
                     await addBottleToCollection(confirmedData);
-                    closeModal();
-                    displayUserDetails();
+                    closePopup();
+                    fetchUserDetails();
                     resolve();
                 } catch (error) {
                     console.error('Error saving confirmed data:', error);
@@ -603,3 +560,45 @@ analyzeUploadBtn.onclick = async function() {
         }
     }
 } 
+
+// Display bottles
+function displayBottles(bottles) {
+    const bottlesList = document.getElementById('bottles-list');
+    bottlesList.innerHTML = bottles.map((bottle, index) => `
+        <div class="bottle-card" style="background-color: var(--light-red); padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <p><strong>${bottle.name}</strong></p>
+                    <p>Region: ${bottle.region} | Cepage: ${bottle.cepage} | Year: ${bottle.year}</p>
+                </div>
+                <button class="button" onclick="deleteBottle(${index})">I drank it!</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Delete bottle
+async function deleteBottle(index) {
+    if (!confirm('Are you sure you want to remove this bottle?')) {
+        return;
+    }
+
+    try {
+        const userRef = db.collection('users').doc(userId);
+        const userDoc = await userRef.get();
+        
+        if (!userDoc.exists) {
+            throw new Error('User not found');
+        }
+
+        const userData = userDoc.data();
+        const bottles = userData.bottles || [];
+        bottles.splice(index, 1);
+
+        await userRef.update({ bottles });
+        displayBottles(bottles);
+    } catch (error) {
+        console.error("Error deleting bottle:", error);
+        alert("Failed to delete bottle. Please try again.");
+    }
+}
